@@ -1,27 +1,19 @@
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { MatSidenavModule, MatButtonModule, MatToolbarModule, MatIconModule, MatListModule } from '@angular/material';
-
-
 import { AppComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { SidenavMenuComponent } from './sidenav-menu/sidenav-menu.component';
-import { LayoutModule } from '@angular/cdk/layout';
+import { CoreModule } from './core/core.module';
+import { AppRoutingModule } from './app-routing.module';
+import { AboutMeComponent } from './about-me/about-me.component';
+import { GamePanelModule } from './game-panel/game-panel.module';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SidenavMenuComponent
+    AboutMeComponent
   ],
   imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    MatSidenavModule,
-    LayoutModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatListModule
+    CoreModule,
+    GamePanelModule,
+    AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]
