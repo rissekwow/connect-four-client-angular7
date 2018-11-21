@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "sudoku-client-angular7": {
+    "connect-four-client-angular7": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/sudoku-client-angular7",
+            "outputPath": "dist/connect-four-client-angular7",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -60,18 +60,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "sudoku-client-angular7:build"
+            "browserTarget": "connect-four-client-angular7:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sudoku-client-angular7:build:production"
+              "browserTarget": "connect-four-client-angular7:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sudoku-client-angular7:build"
+            "browserTarget": "connect-four-client-angular7:build"
           }
         },
         "test": {
@@ -108,7 +108,7 @@
         }
       }
     },
-    "sudoku-client-angular7-e2e": {
+    "connect-four-client-angular7-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "prefix": "",
@@ -117,11 +117,11 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "sudoku-client-angular7:serve"
+            "devServerTarget": "connect-four-client-angular7:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "sudoku-client-angular7:serve:production"
+              "devServerTarget": "connect-four-client-angular7:serve:production"
             }
           }
         },
@@ -137,5 +137,5 @@
       }
     }
   },
-  "defaultProject": "sudoku-client-angular7"
+  "defaultProject": "connect-four-client-angular7"
 }

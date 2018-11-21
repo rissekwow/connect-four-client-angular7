@@ -1,5 +1,5 @@
 {
-  "name": "sudoku-client-angular7",
+  "name": "connect-four-client-angular7",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",

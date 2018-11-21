@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { C4BoardCanvasMap } from './c4-board-canvas-map';
 import { C4CellCanvas } from './c4-cell-canvas';
+import { GamePanelService } from '../game-panel.service';
 
 const INITIAL_CELL_X_POSITION: number = 28;
 const INITIAL_CELL_Y_POSITION: number = 28;
@@ -23,9 +24,8 @@ export class ConnectFourPlaygroundComponent implements OnInit {
   @ViewChild("c4CellYellowImage") c4CellYellowImage: ElementRef;
   @ViewChild("c4CellWhiteImage") c4CellWhiteImage: ElementRef;
   ctx: CanvasRenderingContext2D;
-  c4BoardCanvasMap: C4BoardCanvasMap;
 
-  constructor() { }
+  constructor(private gamePanelService: GamePanelService) { }
 
   ngOnInit() {
     this.ctx = this.canvasRef.nativeElement.getContext("2d");
@@ -34,37 +34,21 @@ export class ConnectFourPlaygroundComponent implements OnInit {
   }
 
   generateC4BoardCanvasMap() {
-    this.c4BoardCanvasMap = new C4BoardCanvasMap();
-    this.c4BoardCanvasMap.boardCells = [];
+    this.gamePanelService.c4BoardCanvasMap = new C4BoardCanvasMap();
+    this.gamePanelService.c4BoardCanvasMap.boardCells = [];
     var cellWidth = this.c4CellWhiteImage.nativeElement.width;
     var cellHeight = this.c4CellWhiteImage.nativeElement.height;
-    for (var x=0; x<BOARD_X_SIZE; x++) {
-      this.c4BoardCanvasMap.boardCells[x] = [];
-      for (var y=0; y<BOARD_Y_SIZE; y++) {
+    for (var x = 0; x < BOARD_X_SIZE; x++) {
+      this.gamePanelService.c4BoardCanvasMap.boardCells[x] = [];
+      for (var y = 0; y < BOARD_Y_SIZE; y++) {
         var cell = new C4CellCanvas();
         cell.x = x;
         cell.y = y;
-        cell.canvasWidth = INITIAL_CELL_X_POSITION+((cellWidth*x)+(X_SPACE_BETWEEN_CELL*x));
-        cell.canvasHeight = INITIAL_CELL_Y_POSITION+((cellHeight*y)+(Y_SPACE_BETWEEN_CELL*y));
-        let randomImage = Math.floor(Math.random() * 3);
-        switch (randomImage) {
-          case 0: {
-            cell.color = "white";
-            cell.image = this.c4CellWhiteImage;
-            break;
-          }
-          case 1: {
-            cell.color = "red";
-            cell.image = this.c4CellRedImage;
-            break;
-          }
-          case 2: {
-            cell.color = "yellow";
-            cell.image = this.c4CellYellowImage;
-            break;
-          }
-        }
-        this.c4BoardCanvasMap.boardCells[x][y] = cell;
+        cell.canvasWidth = INITIAL_CELL_X_POSITION + ((cellWidth * x) + (X_SPACE_BETWEEN_CELL * x));
+        cell.canvasHeight = INITIAL_CELL_Y_POSITION + ((cellHeight * y) + (Y_SPACE_BETWEEN_CELL * y));
+        cell.color = "white";
+        cell.image = this.c4CellWhiteImage;
+        this.gamePanelService.c4BoardCanvasMap.boardCells[x][y] = cell;
       }
     }
   }
@@ -72,14 +56,14 @@ export class ConnectFourPlaygroundComponent implements OnInit {
   drawBoard() {
     setTimeout(e => {
       this.ctx.drawImage(this.c4BoardImage.nativeElement, 0, 0, this.c4BoardImage.nativeElement.width, this.c4BoardImage.nativeElement.height);
-      for (var x=0; x<BOARD_X_SIZE; x++) {
-        for (var y=0; y<BOARD_Y_SIZE; y++) {
-          let cell = this.c4BoardCanvasMap.boardCells[x][y];
+      for (var x = 0; x < BOARD_X_SIZE; x++) {
+        for (var y = 0; y < BOARD_Y_SIZE; y++) {
+          let cell = this.gamePanelService.c4BoardCanvasMap.boardCells[x][y];
           this.ctx.drawImage(cell.image.nativeElement, cell.canvasWidth, cell.canvasHeight, cell.image.nativeElement.width, cell.image.nativeElement.height);
         }
       }
-    }, 
-    MS_FOR_LOAD_IMAGES);
+    },
+      MS_FOR_LOAD_IMAGES);
   }
 
 }
