@@ -1,3 +1,10 @@
-<p>
-  conf-panel works!
-</p>
+<br/>
+<form>
+<div class="form-group form-horizontal">
+      <input type="text" name="username" id="username" class="form-control" placeholder="Username" value="" [(ngModel)]="username" >
+</div>
+
+<div class="form-group form-horizontal">
+      <button type="submit" class="btn btn-primary" (click)="findOpponentUsingWebsocket()" >Search for opponent</button>
+</div>
+</form>

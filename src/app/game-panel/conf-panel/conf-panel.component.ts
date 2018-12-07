@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { GamePanelService } from '../service/game-panel.service';
 
 @Component({
   selector: 'app-conf-panel',
@@ -7,9 +9,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ConfPanelComponent implements OnInit {
 
-  constructor() { }
+  username: string;
+
+  constructor(private gamePanelService: GamePanelService) { }
 
   ngOnInit() {
+  }
+
+  findOpponentUsingWebsocket() {
+    this.gamePanelService.sendRegisterMessageToServer(this.username);
   }
 
 }

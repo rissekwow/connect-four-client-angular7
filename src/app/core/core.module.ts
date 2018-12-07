@@ -5,7 +5,9 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MatSidenavModule, MatToolbarModule, MatButtonModule, MatIconModule, MatListModule } from "@angular/material";
 import { RouterModule } from "@angular/router";
 import { FormsModule } from "@angular/forms";
-import { GamePanelService } from "../game-panel/game-panel.service";
+import { GamePanelService } from "../game-panel/service/game-panel.service";
+import { CanvasPaintService } from "../game-panel/service/canvas-paint.service";
+import { WebsocketService } from "../game-panel/service/websocket-service";
 
 @NgModule( {
     declarations: [
@@ -26,7 +28,9 @@ import { GamePanelService } from "../game-panel/game-panel.service";
         SidenavMenuComponent
     ],
     providers: [
-        GamePanelService
+        GamePanelService,
+        CanvasPaintService,
+        WebsocketService
     ]
 })
 export class CoreModule {
