@@ -1,7 +1,7 @@
 import { Routes, RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { GamePanelComponent } from './game-panel/game-panel.component';
-import { AboutMeComponent } from './about-me/about-me.component';
+import { GamePanelComponent } from './component/game-panel/game-panel.component';
+import { AboutMeComponent } from './component/about-me/about-me.component';
 
 const routes: Routes = [
     {

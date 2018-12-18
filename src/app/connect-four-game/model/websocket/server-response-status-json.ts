@@ -1,4 +1,4 @@
-export class ResponseStatusCommand {
+export class ServerResponseStatusJson {
     responseCode: string;
     message: string;
 }

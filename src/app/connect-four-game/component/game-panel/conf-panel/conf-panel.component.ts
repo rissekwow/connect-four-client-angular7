@@ -1,6 +1,5 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { NgForm } from '@angular/forms';
-import { GamePanelService } from '../service/game-panel.service';
+import { Component, OnInit } from '@angular/core';
+import { GamePanelService } from 'src/app/connect-four-game/service/game-panel.service';
 
 @Component({
   selector: 'app-conf-panel',

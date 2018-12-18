@@ -1,31 +1,42 @@
-import { C4BoardCanvasMap } from "../../shared/canvas-model/c4-board-canvas-map";
 import { Injectable } from "@angular/core";
-import { C4CellCanvas } from "../../shared/canvas-model/c4-cell-canvas";
-import { CanvasConst } from "../../shared/canvas-model/canvas-const";
 import { WebsocketService } from "./websocket-service";
 import { Subject } from "rxjs";
-import { RegisterCommand } from "src/app/shared/websocket/register-command";
+import { C4BoardCanvasMap } from "../model/canvas/c4-board-canvas-map";
+import { WebsocketGameEventJson } from "../model/websocket/websocket-game-event-json";
+import { RegisterJson } from "../model/websocket/register-json";
+import { CanvasConst } from "../core/const/canvas-const";
+import { C4CellCanvas } from "../model/canvas/c4-cell-canvas";
 
-const GAME_STATUS: string[] = ["WAIT_FOR_OPPONENT","OPEN", "DRAW", "RED_WIN", "YELLOW_WIN"];
+
+
+const GAME_STATUS: string[] = ["WAIT_FOR_OPPONENT","OPEN", "RED_MOVE", "YELLOW_MOVE", "DRAW", "RED_WIN", "YELLOW_WIN"];
 const WEBSOCKET_URL = "http://localhost:8080/c4g/websocket/";
+
 @Injectable()
 export class GamePanelService {
     c4BoardCanvasMap: C4BoardCanvasMap;
-    nextMoveColor: string = CanvasConst.CELL_COLOR_RED;
+    nextMoveColor: string;
+    currentGameEvent: Subject<WebsocketGameEventJson>;
+
     public responseStatusCommand: Subject<MessageEvent>;
     
-
-
     constructor(private websocketService: WebsocketService) {
+      this.currentGameEvent = this.websocketService.currentGameState;
     }
 
     sendRegisterMessageToServer(username: string) {
-      let registerCommand = new RegisterCommand();
+      let registerCommand = new RegisterJson();
       registerCommand.nickname = username;
       this.websocketService.initializeWebSocketConnection(WEBSOCKET_URL, username);
       setTimeout(e => {
-        this.websocketService.sendMessage(registerCommand);
-      }, 100);
+        this.websocketService.sendRegisterUserToGameQueueMessage(registerCommand);
+      }, 300);
+    }
+
+    sendMoveMessageToServer(colNumber: number) {
+      setTimeout(e => {
+        this.websocketService.sendMoveMessage(colNumber);
+      }, 300);
      
     }
 
@@ -47,6 +58,10 @@ export class GamePanelService {
             this.c4BoardCanvasMap.boardCells[x][y] = cell;
           }
         }
+      }
+
+      disconnectWebsocket() {
+        this.websocketService.disconnectWebsocket();
       }
     
 
