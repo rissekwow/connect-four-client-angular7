@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import {Stomp} from 'stompjs';
-import {SockJS} from 'sockjs-client';
+import { Stomp } from 'stompjs';
+import { SockJS } from 'sockjs-client';
 import { BehaviorSubject } from 'rxjs';
 import { WebsocketGameEventJson } from '../model/websocket/websocket-game-event-json';
 import { GameStateConst } from '../core/const/game-state-const';
@@ -8,8 +8,6 @@ import { RegisterJson } from '../model/websocket/register-json';
 import { ServerResponseStatusJson } from '../model/websocket/server-response-status-json';
 import { CanvasConst } from '../core/const/canvas-const';
 import { PlayerMoveJson } from '../model/websocket/player-move-json';
-
-
 
 const WEBSOCKET_SERVER_LISTENER_REGISTER = "/jsa/register";
 const WEBSOCKET_SERVER_LISTENER_DISCONNECT = "/jsa/disconnect";
