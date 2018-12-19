@@ -22,6 +22,7 @@ export class CanvasPaintService {
         let that = this;
         this.gamePanelService.currentGameEvent.asObservable().subscribe((gameEvent) => {
             that.gameState = gameEvent;
+            console.log(that.gameState);
             if (that.gameState.moveColNumber !== undefined) {
                 that.updateBoardCellToSpecificColorWhereColorIsWhite(that.gamePanelService.c4BoardCanvasMap.boardCells, that.gameState.moveColNumber, 
                     that.gameState.areYouRed ? CanvasConst.CELL_COLOR_YELLOW : CanvasConst.CELL_COLOR_RED, 
