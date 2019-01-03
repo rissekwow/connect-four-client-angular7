@@ -3,11 +3,14 @@
 }
 
 .sidenav {
-  width: 200px;
+  width: 150px;
+  background-color: #242b2e;
 }
 
 .sidenav .mat-toolbar {
-  background: inherit;
+  color: white;
+  background: #001312 !important;
+  cursor: default;
 }
 
 .mat-toolbar.mat-primary {
@@ -15,3 +18,25 @@
   top: 0;
   z-index: 1;
 }
+
+.mat-list-item {
+  color: white;
+  height: 80px !important;
+}
+
+.mat-list-item-selected {
+  background: #74bbb9 !important;
+}
+
+.toogle-sidenav-icon-top {
+  position: absolute;
+  z-index: 400;
+  top: 0;
+  left: 0;
+}
+
+
+.material-icons.color_green { color: #1ab5b3; }
+
+
+

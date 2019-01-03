@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { GamePanelService } from 'src/app/connect-four-game/service/game-panel.service';
 
 @Component({
-  selector: 'app-conf-panel',
-  templateUrl: './conf-panel.component.html',
-  styleUrls: ['./conf-panel.component.css']
+  selector: 'app-game-configuration',
+  templateUrl: './game-configuration.component.html',
+  styleUrls: ['./game-configuration.component.css']
 })
-export class ConfPanelComponent implements OnInit {
+export class GameConfigurationComponent implements OnInit {
 
   username: string;
 

@@ -1,6 +1,5 @@
+import { Stomp } from '@stomp/stompjs/esm5';
 import { Injectable } from '@angular/core';
-import { Stomp } from 'stompjs';
-import { SockJS } from 'sockjs-client';
 import { BehaviorSubject } from 'rxjs';
 import { WebsocketGameEventJson } from '../model/websocket/websocket-game-event-json';
 import { GameStateConst } from '../core/const/game-state-const';
@@ -8,6 +7,8 @@ import { RegisterJson } from '../model/websocket/register-json';
 import { ServerResponseStatusJson } from '../model/websocket/server-response-status-json';
 import { CanvasConst } from '../core/const/canvas-const';
 import { PlayerMoveJson } from '../model/websocket/player-move-json';
+import * as SockJS from 'sockjs-client';
+
 
 const WEBSOCKET_SERVER_LISTENER_REGISTER = "/jsa/register";
 const WEBSOCKET_SERVER_LISTENER_DISCONNECT = "/jsa/disconnect";
@@ -66,54 +67,42 @@ export class WebsocketService {
           that.currentGameState.next(websocketGameEvent);
           that.stompClient.subscribe(WEBSOCKET_CLIENT_SUBSCRIBE_TOKEN + that.registeredUserToken, (message) => {
             let responseStatusTokenCommand: ServerResponseStatusJson = JSON.parse(message.body);
-            if (responseStatusTokenCommand.responseCode === RESPONSE_CODE_GAME_STARTED) {
-              that.userGameColor = responseStatusTokenCommand.message === CanvasConst.CELL_COLOR_RED ? CanvasConst.CELL_COLOR_RED : CanvasConst.CELL_COLOR_YELLOW;
-              let websocketGameEvent = new WebsocketGameEventJson();
-              websocketGameEvent.currentGameState = that.userGameColor === CanvasConst.CELL_COLOR_RED ? CanvasConst.CELL_COLOR_RED : CanvasConst.CELL_COLOR_YELLOW
-              websocketGameEvent.areYouRed = that.userGameColor === CanvasConst.CELL_COLOR_RED;
-              websocketGameEvent.isYourMove = that.userGameColor === CanvasConst.CELL_COLOR_RED;
-              that.currentGameState.next(websocketGameEvent);
-            }
-            else if (responseStatusTokenCommand.responseCode === RESPONSE_CODE_OPPONENT_MOVE) {
-              let websocketGameEvent = new WebsocketGameEventJson();
-              websocketGameEvent.currentGameState = that.userGameColor === CanvasConst.CELL_COLOR_RED ? GameStateConst.YELLOW_MOVE : GameStateConst.RED_MOVE;
-              websocketGameEvent.areYouRed = that.userGameColor === CanvasConst.CELL_COLOR_RED;
-              websocketGameEvent.isYourMove = true;
-              websocketGameEvent.moveColNumber = +responseStatusTokenCommand.message;
-              that.currentGameState.next(websocketGameEvent);
-            }
-            else if (responseStatusTokenCommand.responseCode === RESPONSE_CODE_RED_WIN) {
-              let websocketGameEvent = new WebsocketGameEventJson();
-              websocketGameEvent.currentGameState = GameStateConst.RED_WIN;
-              websocketGameEvent.areYouRed = that.userGameColor === CanvasConst.CELL_COLOR_RED;
-              websocketGameEvent.moveColNumber = that.userGameColor === CanvasConst.CELL_COLOR_RED ? undefined : +responseStatusTokenCommand.message;
-              websocketGameEvent.isYourMove = false;
-              that.currentGameState.next(websocketGameEvent);
-            }
-            else if (responseStatusTokenCommand.responseCode === RESPONSE_CODE_YELLOW_WIN) {
-              let websocketGameEvent = new WebsocketGameEventJson();
-              websocketGameEvent.currentGameState = GameStateConst.YELLOW_WIN;
-              websocketGameEvent.areYouRed = that.userGameColor === CanvasConst.CELL_COLOR_RED;
-              websocketGameEvent.moveColNumber = that.userGameColor === CanvasConst.CELL_COLOR_RED ? +responseStatusTokenCommand.message : undefined;
-              websocketGameEvent.isYourMove = false;
-              that.currentGameState.next(websocketGameEvent);
-            }
-            else if (responseStatusTokenCommand.responseCode === RESPONSE_CODE_DRAW) {
-              let websocketGameEvent = new WebsocketGameEventJson();
-              websocketGameEvent.currentGameState = GameStateConst.DRAW;
-              websocketGameEvent.areYouRed = that.userGameColor === CanvasConst.CELL_COLOR_RED;
-              websocketGameEvent.moveColNumber = websocketGameEvent.isYourMove === true ? undefined : +responseStatusTokenCommand.message;
-              websocketGameEvent.isYourMove = false;
-              that.currentGameState.next(websocketGameEvent);
+            switch (responseStatusTokenCommand.responseCode) {
+              case RESPONSE_CODE_GAME_STARTED: {
+                that.userGameColor = responseStatusTokenCommand.message === CanvasConst.CELL_COLOR_RED ? CanvasConst.CELL_COLOR_RED : CanvasConst.CELL_COLOR_YELLOW;
+                let websocketEvent = that.handleGameStartedWebsocketMessage(that.userGameColor);
+                that.currentGameState.next(websocketEvent);
+                break;
+              }
+              case RESPONSE_CODE_OPPONENT_MOVE: {
+                let websocketEvent = that.handleOpponentMoveWebsocketMessage(responseStatusTokenCommand.message, that.userGameColor);
+                that.currentGameState.next(websocketEvent);
+                break;
+              }
+              case RESPONSE_CODE_RED_WIN: {
+                let websocketEvent = that.handleRedWinWebsocketMessage(responseStatusTokenCommand.message, that.userGameColor);
+                that.currentGameState.next(websocketEvent);
+                break;
+              }
+              case RESPONSE_CODE_YELLOW_WIN: {
+                let websocketEvent = that.handleYellowWinWebsocketMessage(responseStatusTokenCommand.message, that.userGameColor);
+                that.currentGameState.next(websocketEvent);
+                break;
+              }
+              case RESPONSE_CODE_DRAW: {
+                let websocketEvent = that.handleDrawWebsocketMessage(responseStatusTokenCommand.message, that.userGameColor);
+                that.currentGameState.next(websocketEvent);
+                break;
+              }
             }
           });
         }
       });
-
-
+      
+      
     });
   }
-
+  
   sendRegisterUserToGameQueueMessage(registerCommand: RegisterJson) {
     this.stompClient.send(WEBSOCKET_SERVER_LISTENER_REGISTER, {}, JSON.stringify(registerCommand));
   }
@@ -124,6 +113,52 @@ export class WebsocketService {
     playerMoveCommand.colNumber = colNumber;
     this.stompClient.send(WEBSOCKET_SERVER_LISTENER_MOVE, {}, JSON.stringify(playerMoveCommand));
   }
+
+  private handleGameStartedWebsocketMessage(userGameColor: string) {
+    let websocketGameEvent = new WebsocketGameEventJson();
+    websocketGameEvent.currentGameState = userGameColor === CanvasConst.CELL_COLOR_RED ? CanvasConst.CELL_COLOR_RED : CanvasConst.CELL_COLOR_YELLOW
+    websocketGameEvent.areYouRed = userGameColor === CanvasConst.CELL_COLOR_RED;
+    websocketGameEvent.isYourMove = userGameColor === CanvasConst.CELL_COLOR_RED;
+    websocketGameEvent.moveColNumber = undefined;
+    return websocketGameEvent;
+  }
+
+  private handleOpponentMoveWebsocketMessage(message: string, userGameColor: string) {
+    let websocketGameEvent = new WebsocketGameEventJson();
+    websocketGameEvent.currentGameState = userGameColor === CanvasConst.CELL_COLOR_RED ? GameStateConst.YELLOW_MOVE : GameStateConst.RED_MOVE;
+    websocketGameEvent.areYouRed = userGameColor === CanvasConst.CELL_COLOR_RED;
+    websocketGameEvent.isYourMove = true;
+    websocketGameEvent.moveColNumber = +message;
+    return websocketGameEvent;
+  }
+
+  private handleRedWinWebsocketMessage(message: string, userGameColor: string) {
+    let websocketGameEvent = new WebsocketGameEventJson();
+    websocketGameEvent.currentGameState = GameStateConst.RED_WIN;
+    websocketGameEvent.areYouRed = userGameColor === CanvasConst.CELL_COLOR_RED;
+    websocketGameEvent.moveColNumber = userGameColor === CanvasConst.CELL_COLOR_RED ? undefined : +message;
+    websocketGameEvent.isYourMove = false;
+    return websocketGameEvent;
+  }
+
+  private handleYellowWinWebsocketMessage(message: string, userGameColor: string) {
+    let websocketGameEvent = new WebsocketGameEventJson();
+    websocketGameEvent.currentGameState = GameStateConst.YELLOW_WIN;
+    websocketGameEvent.areYouRed = userGameColor === CanvasConst.CELL_COLOR_RED;
+    websocketGameEvent.moveColNumber = userGameColor === CanvasConst.CELL_COLOR_RED ? +message : undefined;
+    websocketGameEvent.isYourMove = false;
+    return websocketGameEvent;
+  }
+
+  private handleDrawWebsocketMessage(message: string, userGameColor: string) {
+    let websocketGameEvent = new WebsocketGameEventJson();
+    websocketGameEvent.currentGameState = GameStateConst.DRAW;
+    websocketGameEvent.areYouRed = userGameColor === CanvasConst.CELL_COLOR_RED;
+    websocketGameEvent.moveColNumber = websocketGameEvent.isYourMove === true ? undefined : +message;
+    websocketGameEvent.isYourMove = false;
+    return websocketGameEvent;
+  }
+
 
 
 

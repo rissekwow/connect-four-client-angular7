@@ -1,27 +1,34 @@
+
 <mat-sidenav-container class="sidenav-container">
+ 
   <mat-sidenav #drawer class="sidenav" fixedInViewport="true"
       [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
       [mode]="(isHandset$ | async) ? 'over' : 'side'"
       [opened]="!(isHandset$ | async)">
+    <div id='sidenav-custom-menu'>
     <mat-toolbar>Menu</mat-toolbar>
     <mat-nav-list>
-      <a mat-list-item routerLink="/game-panel">Game board</a>
-      <a mat-list-item routerLink="/about-me">About me</a>
+      <a mat-list-item routerLinkActive="mat-list-item-selected" routerLink="/home">Home</a>
+      <a mat-list-item routerLinkActive="mat-list-item-selected" routerLink="/game-panel">Playground</a>
+      <a mat-list-item routerLinkActive="mat-list-item-selected" routerLink="/about-me">Contact</a>
     </mat-nav-list>
+  </div>
   </mat-sidenav>
+   
   <mat-sidenav-content>
-    <mat-toolbar color="primary">
-      <button
-        type="button"
-        aria-label="Toggle sidenav"
-        mat-icon-button
-        (click)="drawer.toggle()"
-        *ngIf="isHandset$ | async">
-        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
-      </button>
-      <span>Connect Four Game</span>
-    </mat-toolbar>
+      <div class="game-content">
+        <div class="responsive-image-top"> <img src="../../../assets/img/template-content-top.png" class="img-fluid"  alt="Responsive image"></div>
+          <div class="toogle-sidenav-icon-top">  <button
+            type="button"
+            aria-label="Toggle sidenav"
+            mat-icon-button
+            (click)="drawer.toggle()"
+            >
+            <mat-icon class="material-icons color_green">ballot</mat-icon>
+          </button></div>
     <ng-content>
     </ng-content>
+    </div>
   </mat-sidenav-content>
+
 </mat-sidenav-container>
