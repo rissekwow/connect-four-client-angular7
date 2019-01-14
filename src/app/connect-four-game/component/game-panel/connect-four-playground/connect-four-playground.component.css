@@ -1,0 +1,4 @@
+canvas {
+    background-image: url('/assets/img/background-pattern.jpg');
+    background-repeat: repeat-y repeat-x;
+}

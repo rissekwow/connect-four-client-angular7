@@ -7,5 +7,6 @@ export class C4CellCanvas {
     canvasHeight: number;
     color: string;
     image: ElementRef;
-    
+    fake: boolean;
+
 }

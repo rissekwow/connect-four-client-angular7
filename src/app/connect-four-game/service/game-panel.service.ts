@@ -1,6 +1,6 @@
-import { Injectable } from "@angular/core";
+import { Injectable, ElementRef } from "@angular/core";
 import { WebsocketService } from "./websocket-service";
-import { Subject } from "rxjs";
+import { BehaviorSubject, Subject } from "rxjs";
 import { C4BoardCanvasMap } from "../model/canvas/c4-board-canvas-map";
 import { WebsocketGameEventJson } from "../model/websocket/websocket-game-event-json";
 import { RegisterJson } from "../model/websocket/register-json";
@@ -8,26 +8,30 @@ import { CanvasConst } from "../core/const/canvas-const";
 import { C4CellCanvas } from "../model/canvas/c4-cell-canvas";
 
 
-
-const GAME_STATUS: string[] = ["WAIT_FOR_OPPONENT","OPEN", "RED_MOVE", "YELLOW_MOVE", "DRAW", "RED_WIN", "YELLOW_WIN"];
-const WEBSOCKET_URL = "http://localhost:8080/c4g/websocket/";
+const WEBSOCKET_URL = "http://192.168.173.208:8080/c4g/websocket/";
 
 @Injectable()
 export class GamePanelService {
     c4BoardCanvasMap: C4BoardCanvasMap;
     nextMoveColor: string;
-    currentGameEvent: Subject<WebsocketGameEventJson>;
+    currentGameEvent: BehaviorSubject<WebsocketGameEventJson>;
+    isCanvasClicked: Subject<boolean>;
+    c4CellWhiteImage: ElementRef;
 
-    public responseStatusCommand: Subject<MessageEvent>;
-    
+    public responseStatusCommand: BehaviorSubject<MessageEvent>;
+
     constructor(private websocketService: WebsocketService) {
       this.currentGameEvent = this.websocketService.currentGameState;
+      this.isCanvasClicked = new Subject<boolean>();
     }
 
     sendRegisterMessageToServer(username: string) {
+      this.websocketService.disconnectWebsocket();
       let registerCommand = new RegisterJson();
       registerCommand.nickname = username;
+      this.clearBoardToWhiteCellsOnly();
       this.websocketService.initializeWebSocketConnection(WEBSOCKET_URL, username);
+      console.log("Init done");
       setTimeout(e => {
         this.websocketService.sendRegisterUserToGameQueueMessage(registerCommand);
       }, 300);
@@ -36,11 +40,17 @@ export class GamePanelService {
     sendMoveMessageToServer(colNumber: number) {
       setTimeout(e => {
         this.websocketService.sendMoveMessage(colNumber);
+        this.isCanvasClicked.next(true);
       }, 300);
-     
+
+    }
+
+    clearBoardToWhiteCellsOnly() {
+      this.generateC4BoardCanvasMapWithAllWhiteCells(this.c4CellWhiteImage);
     }
 
     generateC4BoardCanvasMapWithAllWhiteCells(c4CellWhiteImage) {
+        this.c4CellWhiteImage = c4CellWhiteImage;
         this.c4BoardCanvasMap = new C4BoardCanvasMap();
         this.c4BoardCanvasMap.boardCells = [];
         var cellWidth = c4CellWhiteImage.nativeElement.width;
@@ -55,6 +65,7 @@ export class GamePanelService {
             cell.canvasHeight = CanvasConst.INITIAL_CELL_Y_POSITION + ((cellHeight * y) + (CanvasConst.Y_SPACE_BETWEEN_CELL * y));
             cell.color = CanvasConst.CELL_COLOR_WHITE;
             cell.image = c4CellWhiteImage;
+            cell.fake = false;
             this.c4BoardCanvasMap.boardCells[x][y] = cell;
           }
         }
@@ -63,6 +74,6 @@ export class GamePanelService {
       disconnectWebsocket() {
         this.websocketService.disconnectWebsocket();
       }
-    
+
 
 }

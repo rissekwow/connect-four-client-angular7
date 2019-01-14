@@ -1,6 +1,6 @@
 
 <mat-sidenav-container class="sidenav-container">
- 
+
   <mat-sidenav #drawer class="sidenav" fixedInViewport="true"
       [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
       [mode]="(isHandset$ | async) ? 'over' : 'side'"
@@ -8,13 +8,13 @@
     <div id='sidenav-custom-menu'>
     <mat-toolbar>Menu</mat-toolbar>
     <mat-nav-list>
-      <a mat-list-item routerLinkActive="mat-list-item-selected" routerLink="/home">Home</a>
-      <a mat-list-item routerLinkActive="mat-list-item-selected" routerLink="/game-panel">Playground</a>
-      <a mat-list-item routerLinkActive="mat-list-item-selected" routerLink="/about-me">Contact</a>
+      <a mat-list-item routerLinkActive="mat-list-item-selected" routerLink="/game">Playground</a>
+      <a mat-list-item routerLinkActive="mat-list-item-selected" routerLink="/stats">Statistics</a>
+      <a mat-list-item routerLinkActive="mat-list-item-selected" routerLink="/contact">Contact</a>
     </mat-nav-list>
   </div>
   </mat-sidenav>
-   
+
   <mat-sidenav-content>
       <div class="game-content">
         <div class="responsive-image-top"> <img src="../../../assets/img/template-content-top.png" class="img-fluid"  alt="Responsive image"></div>

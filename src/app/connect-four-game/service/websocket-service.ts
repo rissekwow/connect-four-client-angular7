@@ -16,7 +16,8 @@ const WEBSOCKET_SERVER_LISTENER_MOVE = "/jsa/move";
 const WEBSOCKET_CLIENT_SUBSCRIBE_USER = "/game/user/";
 const WEBSOCKET_CLIENT_SUBSCRIBE_TOKEN = "/game/token/";
 const RESPONSE_CODE_TOKEN_REGISTERED = "TOKEN_REGISTERED";
-const RESPONSE_CODE_GAME_STARTED = "GAME_STARTED";
+const RESPONSE_CODE_GAME_STARTED_RED = "GAME_STARTED_RED";
+const RESPONSE_CODE_GAME_STARTED_YELLOW = "GAME_STARTED_YELLOW";
 const RESPONSE_CODE_OPPONENT_MOVE = "OPPONENT_MOVE";
 const RESPONSE_CODE_YELLOW_WIN = "YELLOW_WIN";
 const RESPONSE_CODE_RED_WIN = "RED_WIN";
@@ -30,15 +31,15 @@ export class WebsocketService {
   private registeredUserToken: string;
   private username: string;
   private userGameColor: string;
+  private opponentName: string;
   currentGameState: BehaviorSubject<WebsocketGameEventJson>;
 
 
   constructor() {
     this.isStompConnected = false;
     let websocketGameEvent = new WebsocketGameEventJson();
-        websocketGameEvent.currentGameState = GameStateConst.OPEN;
+        websocketGameEvent.currentGameState = GameStateConst.INIT;
     this.currentGameState = new BehaviorSubject<WebsocketGameEventJson>(websocketGameEvent);
-
   }
 
   disconnectWebsocket(): void {
@@ -48,6 +49,9 @@ export class WebsocketService {
       this.stompClient.send(WEBSOCKET_SERVER_LISTENER_DISCONNECT, {}, JSON.stringify(registerCommand));
       this.stompClient.disconnect();
       this.isStompConnected = false;
+      this.username = undefined;
+      this.registeredUserToken = undefined;
+
     }
   }
 
@@ -62,15 +66,25 @@ export class WebsocketService {
         let responseStatusCommand: ServerResponseStatusJson = JSON.parse(message.body);
         if (responseStatusCommand.responseCode === RESPONSE_CODE_TOKEN_REGISTERED) {
           that.registeredUserToken = responseStatusCommand.message;
+          console.log(username + ", token: " + that.registeredUserToken);
           let websocketGameEvent = new WebsocketGameEventJson();
           websocketGameEvent.currentGameState = GameStateConst.WAIT_FOR_OPPONENT;
           that.currentGameState.next(websocketGameEvent);
           that.stompClient.subscribe(WEBSOCKET_CLIENT_SUBSCRIBE_TOKEN + that.registeredUserToken, (message) => {
             let responseStatusTokenCommand: ServerResponseStatusJson = JSON.parse(message.body);
+            console.log(message);
             switch (responseStatusTokenCommand.responseCode) {
-              case RESPONSE_CODE_GAME_STARTED: {
-                that.userGameColor = responseStatusTokenCommand.message === CanvasConst.CELL_COLOR_RED ? CanvasConst.CELL_COLOR_RED : CanvasConst.CELL_COLOR_YELLOW;
-                let websocketEvent = that.handleGameStartedWebsocketMessage(that.userGameColor);
+              case RESPONSE_CODE_GAME_STARTED_RED: {
+                that.userGameColor = CanvasConst.CELL_COLOR_RED;
+                let opponentName = responseStatusTokenCommand.message;
+                let websocketEvent = that.handleGameStartedWebsocketMessage(that.userGameColor, opponentName);
+                that.currentGameState.next(websocketEvent);
+                break;
+              }
+              case RESPONSE_CODE_GAME_STARTED_YELLOW: {
+                that.userGameColor = CanvasConst.CELL_COLOR_YELLOW;
+                let opponentName = responseStatusTokenCommand.message;
+                let websocketEvent = that.handleGameStartedWebsocketMessage(that.userGameColor, opponentName);
                 that.currentGameState.next(websocketEvent);
                 break;
               }
@@ -98,11 +112,11 @@ export class WebsocketService {
           });
         }
       });
-      
-      
+
+
     });
   }
-  
+
   sendRegisterUserToGameQueueMessage(registerCommand: RegisterJson) {
     this.stompClient.send(WEBSOCKET_SERVER_LISTENER_REGISTER, {}, JSON.stringify(registerCommand));
   }
@@ -114,12 +128,13 @@ export class WebsocketService {
     this.stompClient.send(WEBSOCKET_SERVER_LISTENER_MOVE, {}, JSON.stringify(playerMoveCommand));
   }
 
-  private handleGameStartedWebsocketMessage(userGameColor: string) {
+  private handleGameStartedWebsocketMessage(userGameColor: string, opponentName: string) {
     let websocketGameEvent = new WebsocketGameEventJson();
-    websocketGameEvent.currentGameState = userGameColor === CanvasConst.CELL_COLOR_RED ? CanvasConst.CELL_COLOR_RED : CanvasConst.CELL_COLOR_YELLOW
+    websocketGameEvent.currentGameState = GameStateConst.OPEN;
     websocketGameEvent.areYouRed = userGameColor === CanvasConst.CELL_COLOR_RED;
     websocketGameEvent.isYourMove = userGameColor === CanvasConst.CELL_COLOR_RED;
     websocketGameEvent.moveColNumber = undefined;
+    websocketGameEvent.opponentName = opponentName;
     return websocketGameEvent;
   }
 

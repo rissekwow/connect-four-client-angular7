@@ -1,17 +1,20 @@
 import { Routes, RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { GamePanelComponent } from './component/game-panel/game-panel.component';
-import { AboutMeComponent } from './component/about-me/about-me.component';
+import { ContactComponent } from './component/contact/contact.component';
 
 const routes: Routes = [
     {
-        path: "", redirectTo: "/game-panel", pathMatch:"full"
+        path: "", redirectTo: "/game", pathMatch:"full"
     },
     {
-        path: "game-panel", component: GamePanelComponent
+        path: "game", component: GamePanelComponent
     },
+    // {
+    //     path: "stats", component: StatisticsPanelComponent
+    // },
     {
-        path: "about-me", component: AboutMeComponent
+        path: "contact", component: ContactComponent
     }
 ]
 

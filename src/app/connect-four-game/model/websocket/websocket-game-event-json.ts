@@ -3,4 +3,5 @@ export class WebsocketGameEventJson {
     isYourMove: boolean;
     currentGameState: string;
     moveColNumber: number;
+    opponentName: string;
 }

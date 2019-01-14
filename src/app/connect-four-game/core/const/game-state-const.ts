@@ -6,4 +6,6 @@ export class GameStateConst {
     public static readonly DRAW: string = "DRAW";
     public static readonly RED_WIN: string = "RED_WIN";
     public static readonly YELLOW_WIN: string = "YELLOW_WIN";
+    public static readonly INIT: string = "INIT";
+    public static readonly OPPONENT_LEAVED: string = "OPPONENT_LEAVED";
 }

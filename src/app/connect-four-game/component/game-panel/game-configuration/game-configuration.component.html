@@ -1,10 +1,104 @@
 <br/>
-<form>
+<div [hidden]="!setNicknamePanel">
 <div class="form-group form-horizontal">
       <input type="text" name="username" id="username" class="form-control" placeholder="Username" value="" [(ngModel)]="username" >
 </div>
-
 <div class="form-group form-horizontal">
       <button type="submit" class="btn btn-primary" (click)="findOpponentUsingWebsocket()">Search for opponent</button>
 </div>
-</form>
+</div>
+<div [hidden]="!openGamePanel">
+      <div class="form-group form-horizontal">
+            <table>
+                  <tr>
+                        <td><img width="64" height="69" src="../../../assets/img/head-avatar.png" /></td>
+                        <td><h2>{{ username }}</h2></td>
+                        <td><div [class.show-image]="areYouRed" [class.disable-image]="!areYouRed">
+                              <svg width="50" height="50">
+                                    <rect width="50" height="50" style="fill:rgb(255, 0, 0);stroke-width:3;stroke:rgb(0,0,0)" />
+                              </svg>
+                        </div>
+                        <div [class.show-image]="!areYouRed" [class.disable-image]="areYouRed">
+                              <svg width="50" height="50">
+                                    <rect width="50" height="50" style="fill:rgb(238, 255, 0);stroke-width:3;stroke:rgb(0,0,0)" />
+                              </svg>
+                        </div></td>
+                  </tr>
+            </table>
+
+      <img width="64" height="69" src="../../../assets/img/vs.png" />
+
+            <table>
+                  <tr>
+                        <td><img width="64" height="69" src="../../../assets/img/head-avatar.png" /></td>
+                        <td>
+                              <h2>{{ opponentName }}</h2>
+                        </td>
+                        <td>
+                              <div [class.show-image]="!areYouRed" [class.disable-image]="areYouRed">
+                                    <svg width="50" height="50">
+                                          <rect width="50" height="50" style="fill:rgb(255, 0, 0);stroke-width:3;stroke:rgb(0,0,0)" />
+                                    </svg>
+                              </div>
+                              <div [class.show-image]="areYouRed" [class.disable-image]="!areYouRed">
+                                    <svg width="50" height="50">
+                                          <rect width="50" height="50" style="fill:rgb(238, 255, 0);stroke-width:3;stroke:rgb(0,0,0)" />
+                                    </svg>
+                              </div>
+                        </td>
+                  </tr>
+            </table>
+
+      </div>
+
+      <div class="form-group form-horizontal">
+            <h2>Current movement for color</h2>
+            <div [class.show-image]="isYourMove && areYouRed" [class.disable-image]="!(isYourMove && areYouRed)">
+                  <svg width="50" height="50">
+                        <rect width="50" height="50" style="fill:rgb(255, 0, 0);stroke-width:3;stroke:rgb(0,0,0)" />
+                  </svg>
+            </div>
+            <div [class.show-image]="!isYourMove && areYouRed" [class.disable-image]="!(!isYourMove && areYouRed)">
+                  <svg width="50" height="50">
+                        <rect width="50" height="50" style="fill:rgb(238, 255, 0);stroke-width:3;stroke:rgb(0,0,0)" />
+                  </svg>
+            </div>
+
+            <div [class.show-image]="isYourMove && !areYouRed" [class.disable-image]="!(isYourMove && !areYouRed)">
+                  <svg width="50" height="50">
+                        <rect width="50" height="50" style="fill:rgb(238, 255, 0);stroke-width:3;stroke:rgb(0,0,0)" />
+                  </svg>
+            </div>
+            <div [class.show-image]="!isYourMove && !areYouRed" [class.disable-image]="!(!isYourMove && !areYouRed)">
+                  <svg width="50" height="50">
+                        <rect width="50" height="50" style="fill:rgb(255, 0, 0);stroke-width:3;stroke:rgb(0,0,0)" />
+                  </svg>
+            </div>
+      </div>
+</div>
+<div [hidden]="!gameFindingPanel">
+      <div class="form-group form-horizontal">
+            <img width="128" height="128" src="../../../assets/img/queue_wait.gif" />
+      </div>
+      <div class="form-group form-horizontal">
+            <button type="submit" class="btn btn-primary" (click)="disconnectUserFromQueueUsingWebsocket()">Leave waiting room</button>
+      </div>
+</div>
+
+<div [hidden]="!gameEndPanel">
+      <div [class.show-image]="areYouWinner()" [class.disable-image]="!areYouWinner()">
+            <img width="128" height="128" src="../../../assets/img/victory.png" />
+            <h1>Congratulations. You are winner!</h1>
+      </div>
+      <div [class.show-image]="areYouLoser()" [class.disable-image]="!areYouLoser()">
+            <img width="128" height="128" src="../../../assets/img/loser.png" />
+            <h1>Unfortunatelly. You need to practice more to win next time!</h1>
+      </div>
+      <div [class.show-image]="areGameDraw()" [class.disable-image]="!areGameDraw()">
+            <img width="128" height="128" src="../../../assets/img/draw.png" />
+            <h1>Surprise. We don't have better player, draw result!</h1>
+      </div>
+      <div class="form-group form-horizontal">
+            <button type="submit" class="btn btn-primary" (click)="findOpponentUsingWebsocket()">Search for opponent</button>
+      </div>
+</div>
